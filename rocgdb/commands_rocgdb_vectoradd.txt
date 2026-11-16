@@ -1,0 +1,185 @@
+# ===================================================
+# rocgdb -x commands_rocgdb_vectoradd.txt ./build/vectoradd
+# ===================================================
+
+# Print commands before executing them.
+set trace-commands on
+# Automatically accept pending breakpoints.
+set breakpoint pending on
+# Disables line wrapping at the terminal width.
+set width unlimited
+
+# ===================================================
+# 1. Stop at the vectorAdd() kernel.
+# ===================================================
+
+# Set a breakpoint in vectorAdd().
+break 35
+# Set a breakpoint in vectorAddStride().
+break 51
+
+# Run the program and stop at the first breakpoint.
+run
+
+echo The program stops at the breakpoint in vectorAdd(), which uses one work-item per element.\n
+
+# ===================================================
+# 2. Inspect the GPU execution configuration.
+# ===================================================
+
+show architecture
+info agents
+info queues
+info dispatches
+info threads
+
+echo Note that thread IDs in ROCgdb represent wavefronts on the GPU.\n
+
+# ===================================================
+# 3. Inspect a work-item in vectorAdd().
+# ===================================================
+
+# ROCgdb single-stepping operates at wavefront granularity.
+# Choose a GPU work-item by selecting a "thread"=wavefront and a lane.
+# For this, select "thread 13", which corresponds to wavefront 8 assigned
+# to work-group (3,0,0).
+thread 13
+# Lanes correspond to work-items. Choose lane 2 on wavefront 8.
+info lanes
+lane 2
+# Only 3 lanes are used on wavefront 8; the other 61 lanes are unused and
+# hidden by default.
+info lanes
+print blockIdx
+print threadIdx
+print i
+print A[i]
+print B[i]
+
+echo The next wavefront hits the breakpoint before the selected work-item continues.\n
+
+# Continue until the selected wavefront hits the breakpoint again.
+next
+
+# Disable the breakpoint and freeze the other wavefronts so another
+# work-item can be examined later.
+disable 1
+set scheduler-locking on
+
+# Go back to the previously selected work-item in wavefront 8 ("thread" 13),
+# lane 2.
+thread 13
+lane 2
+# Step over the next two code lines.
+next
+next
+echo This GPU work-item is finished after exactly one index "i". Focus on the next GPU work-item.\n
+
+# ===================================================
+# 4. Inspect a work-item outside the valid range.
+# ===================================================
+
+# Scheduler locking keeps the other "threads"=wavefronts frozen. This allows
+# choosing a late GPU work-item whose "if" condition is false, e.g., wavefront 5
+# assigned to work-group (14,0,0) by choosing "thread 10".
+thread 10 
+# Check the lanes.
+info lanes
+# Choose lane 63 on wavefront 5.
+lane 63
+print i
+echo The if statement is false.\n
+# Step past the if body.
+next
+
+# Let all "threads"=wavefronts finish their work by unfreezing them.
+set scheduler-locking replay
+
+# Go directly to breakpoint 2 by continuing.
+delete 1
+continue
+
+# ===================================================
+# 5. Follow a grid-stride work-item.
+# ===================================================
+
+echo Continue to the grid-stride loop in vectorAddStride().\n
+
+# Disable the breakpoint in vectorAddStride() at the current hit.
+disable 2
+
+# Inspect the grid-stride execution configuration.
+show architecture
+info agents
+info queues
+info dispatches
+info threads
+
+# Choose a GPU work-item, i.e., a wavefront and lane, by setting the "thread"
+# and the lane.
+thread 44
+lane 2
+print blockIdx
+print threadIdx
+print tid
+print stride
+
+# Freeze the other "threads"=wavefronts.
+set scheduler-locking on
+
+# Step into the loop body and print the loop index.
+next
+print i
+
+# Display the loop index at each stop.
+display i
+
+# Advance through the loop iterations.
+next 2
+next 2
+next 2
+next 3
+
+# Stop displaying the loop index.
+undisplay 1
+echo The GPU work-item finished after 3 iterations (i = 73, 428, 783) of the for loop.\n
+
+# ===================================================
+# 6. Follow a later grid-stride work-item.
+# ===================================================
+
+# Choose one of the later GPU work-items.
+thread 41
+lane 1
+print blockIdx
+print threadIdx
+
+# Step into the loop body and print the loop index.
+next
+print i
+
+# Display the loop index at each stop.
+display i
+
+# Advance through the loop iterations.
+next 2
+next 2
+next 2
+
+# Stop displaying the loop index.
+undisplay 2
+delete 2
+echo The GPU work-item finished after 2 iterations (i = 349, 704) of the for loop.\n
+
+# ===================================================
+# 7. Clean up.
+# ===================================================
+
+# Start all "threads", including the host, again.
+set scheduler-locking replay
+
+# Continue to the end of the program.
+continue
+
+# Quit ROCgdb.
+quit
