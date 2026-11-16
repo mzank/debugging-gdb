@@ -1,0 +1,255 @@
+NVIDIA (R) cuda-gdb 13.0
+Portions Copyright (C) 2007-2025 NVIDIA Corporation
+Based on GNU gdb 14.2
+Copyright (C) 2023 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This CUDA-GDB was configured as "x86_64-pc-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://forums.developer.nvidia.com/c/developer-tools/cuda-developer-tools/cuda-gdb>.
+Find the CUDA-GDB manual and other documentation resources online at:
+    <https://docs.nvidia.com/cuda/cuda-gdb/index.html>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./build/vectoradd...
++break 35
+Breakpoint 1 at 0x1a000: file ../src/vectoradd.cu, line 39.
++break 51
+Breakpoint 2 at 0x1b000: file ../src/vectoradd.cu, line 55.
++run
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7ffd0a000000 (LWP 4443)]
+[New Thread 0x7ffd0a001000 (LWP 4444)]
+[Detaching after fork from child process 4447]
+[New Thread 0x7ffd0a002000 (LWP 4445)]
+[New Thread 0x7ffd0a003000 (LWP 4446)]
+[Switching focus to CUDA kernel 0, grid 1, block (0,0,0), thread (0,0,0), device 0, sm 0, warp 0, lane 0]
+
+CUDA thread hit Breakpoint 1, vectorAdd<<<(15,1,1),(67,1,1)>>> (A=0x7ffd09000000, B=0x7ffd09001000, C=0x7ffd09002000, size=999)
+    at ../src/vectoradd.cu:35
+35	    if (i < size)
++echo The program stops at the breakpoint in vectorAdd(), which uses one thread per element.\n
+The program stops at the breakpoint in vectorAdd(), which uses one thread per element.
++info cuda devices
+  Dev PCI Bus/Dev ID             Name Description SM Type SMs Warps/SM Lanes/Warp Max Regs/Lane    Active SMs Mask 
+*   0        01:00.0 NVIDIA RTX A5000   GA102GL-A   sm_86  64       48         32           255 0x0000000015555555 
+    1        02:00.0 NVIDIA RTX A5000   GA102GL-A   sm_86  64       48         32           255 0x0000000000000000 
+    2        03:00.0 NVIDIA RTX A5000   GA102GL-A   sm_86  64       48         32           255 0x0000000000000000 
+    3        04:00.0 NVIDIA RTX A5000   GA102GL-A   sm_86  64       48         32           255 0x0000000000000000 
++info cuda kernels
+  Kernel Parent Dev Grid Status           SMs Mask  GridDim BlockDim Invocation                                                                
+*      0      -   0    1 Active 0x0000000015555555 (15,1,1) (67,1,1) vectorAdd(A=0x7ffd09000000, B=0x7ffd09001000, C=0x7ffd09002000, size=999) 
++info cuda sms
+  SM  Active Warps Mask 
+Device 0
+*  0 0x0000000000000007 
+   2 0x0000000000000007 
+   4 0x0000000000000007 
+   6 0x0000000000000007 
+   8 0x0000000000000007 
+  10 0x0000000000000007 
+  12 0x0000000000000007 
+  14 0x0000000000000007 
+  16 0x0000000000000007 
+  18 0x0000000000000007 
+  20 0x0000000000000007 
+  22 0x0000000000000007 
+  24 0x0000000000000007 
+  26 0x0000000000000007 
+  28 0x0000000000000007 
++info cuda blocks
+  BlockIdx To BlockIdx Count   State 
+Kernel 0
+*  (0,0,0)    (14,0,0)    15 running 
++info cuda threads
+  BlockIdx ThreadIdx To BlockIdx ThreadIdx Count                 PC            Filename  Line 
+Kernel 0
+*  (0,0,0)   (0,0,0)    (14,0,0)  (66,0,0)  1005 0x00007ffd08000000 ../src/vectoradd.cu    35 
++cuda block 3 thread 35
+[Switching focus to CUDA kernel 0, grid 1, block (3,0,0), thread (35,0,0), device 0, sm 6, warp 1, lane 3]
+35	    if (i < size)
++print blockIdx
+$1 = {x = 3, y = 0, z = 0}
++print threadIdx
+$2 = {x = 35, y = 0, z = 0}
++print i
+$3 = 236
++print A[i]
+$4 = 236
++print B[i]
+$5 = 472
++info cuda warps
+  Wp Active Lanes Mask Divergent Lanes Mask          Active PC Kernel BlockIdx First Active ThreadIdx 
+Device 0 SM 6
+   0        0xffffffff           0x00000000 0x00007ffd08000000      0  (3,0,0)                (0,0,0) 
+   1        0xffffffff           0x00000000 0x00007ffd08000000      0  (3,0,0)               (32,0,0) 
+   2        0x00000007           0x00000000 0x00007ffd08000000      0  (3,0,0)               (64,0,0) 
++info cuda lanes
+  Ln  State         PC         ThreadIdx Exception 
+Device 0 SM 6 Warp 1
+   0 active 0x00007ffd08000000  (32,0,0)    None   
+   1 active 0x00007ffd08000000  (33,0,0)    None   
+   2 active 0x00007ffd08000000  (34,0,0)    None   
+*  3 active 0x00007ffd08000000  (35,0,0)    None   
+   4 active 0x00007ffd08000000  (36,0,0)    None   
+   5 active 0x00007ffd08000000  (37,0,0)    None   
+   6 active 0x00007ffd08000000  (38,0,0)    None   
+   7 active 0x00007ffd08000000  (39,0,0)    None   
+   8 active 0x00007ffd08000000  (40,0,0)    None   
+   9 active 0x00007ffd08000000  (41,0,0)    None   
+  10 active 0x00007ffd08000000  (42,0,0)    None   
+  11 active 0x00007ffd08000000  (43,0,0)    None   
+  12 active 0x00007ffd08000000  (44,0,0)    None   
+  13 active 0x00007ffd08000000  (45,0,0)    None   
+  14 active 0x00007ffd08000000  (46,0,0)    None   
+  15 active 0x00007ffd08000000  (47,0,0)    None   
+  16 active 0x00007ffd08000000  (48,0,0)    None   
+  17 active 0x00007ffd08000000  (49,0,0)    None   
+  18 active 0x00007ffd08000000  (50,0,0)    None   
+  19 active 0x00007ffd08000000  (51,0,0)    None   
+  20 active 0x00007ffd08000000  (52,0,0)    None   
+  21 active 0x00007ffd08000000  (53,0,0)    None   
+  22 active 0x00007ffd08000000  (54,0,0)    None   
+  23 active 0x00007ffd08000000  (55,0,0)    None   
+  24 active 0x00007ffd08000000  (56,0,0)    None   
+  25 active 0x00007ffd08000000  (57,0,0)    None   
+  26 active 0x00007ffd08000000  (58,0,0)    None   
+  27 active 0x00007ffd08000000  (59,0,0)    None   
+  28 active 0x00007ffd08000000  (60,0,0)    None   
+  29 active 0x00007ffd08000000  (61,0,0)    None   
+  30 active 0x00007ffd08000000  (62,0,0)    None   
+  31 active 0x00007ffd08000000  (63,0,0)    None   
++echo This CUDA thread (global) is finished after exactly one index "i". Focus on the next CUDA thread (global).\n
+This CUDA thread (global) is finished after exactly one index "i". Focus on the next CUDA thread (global).
++next 3
+[Switching focus to CUDA kernel 0, grid 1, block (0,0,0), thread (0,0,0), device 0, sm 0, warp 0, lane 0]
+
+CUDA thread hit Breakpoint 1, vectorAdd<<<(15,1,1),(67,1,1)>>> (A=0x7ffd09000000, B=0x7ffd09001000, C=0x7ffd09002000, size=999)
+    at ../src/vectoradd.cu:35
+35	    if (i < size)
++cuda block 14 thread 66
+[Switching focus to CUDA kernel 0, grid 1, block (14,0,0), thread (66,0,0), device 0, sm 28, warp 2, lane 2]
+35	    if (i < size)
++print blockIdx
+$6 = {x = 14, y = 0, z = 0}
++print threadIdx
+$7 = {x = 66, y = 0, z = 0}
++print i
+$8 = 1004
++info cuda lanes
+  Ln  State         PC         ThreadIdx Exception 
+Device 0 SM 28 Warp 2
+   0 active 0x00007ffd08000000  (64,0,0)    None   
+   1 active 0x00007ffd08000000  (65,0,0)    None   
+*  2 active 0x00007ffd08000000  (66,0,0)    None   
++cuda warp 2 lane 1
+[Switching focus to CUDA kernel 0, grid 1, block (14,0,0), thread (65,0,0), device 0, sm 28, warp 2, lane 1]
+35	    if (i < size)
++print blockIdx
+$9 = {x = 14, y = 0, z = 0}
++print threadIdx
+$10 = {x = 65, y = 0, z = 0}
++print i
+$11 = 1003
++echo The if condition is false.\n
+The if condition is false.
++next
+39	}
++echo Continue to the grid-stride loop in vectorAddStride().\n
+Continue to the grid-stride loop in vectorAddStride().
++continue
+[Switching focus to CUDA kernel 1, grid 2, block (4,0,0), thread (65,0,0), device 0, sm 8, warp 1, lane 1]
+
+CUDA thread hit Breakpoint 2, vectorAddStride<<<(5,1,1),(71,1,1)>>> (A=0x7ffd09000000, B=0x7ffd09001000, C=0x7ffd09003000, size=999)
+    at ../src/vectoradd.cu:51
+51	    for (unsigned int i = tid; i < size; i += stride)
++info cuda threads
+  BlockIdx ThreadIdx To BlockIdx ThreadIdx Count                 PC            Filename  Line 
+Kernel 1
+*  (0,0,0)   (0,0,0)     (4,0,0)  (70,0,0)   355 0x00007ffd08001000 ../src/vectoradd.cu    51 
++cuda block 3 thread 70
+[Switching focus to CUDA kernel 1, grid 2, block (3,0,0), thread (70,0,0), device 0, sm 6, warp 1, lane 6]
+51	    for (unsigned int i = tid; i < size; i += stride)
++print blockIdx
+$12 = {x = 3, y = 0, z = 0}
++print threadIdx
+$13 = {x = 70, y = 0, z = 0}
++print tid
+$14 = 283
++print stride
+$15 = 355
++next
+53	        C[i] = A[i] + B[i];
++print i
+$16 = 283
++display i
++next 2
+53	        C[i] = A[i] + B[i];
+1: i = 638
++next 2
+53	        C[i] = A[i] + B[i];
+1: i = 993
++next 2
+55	}
++undisplay 1
++echo The CUDA thread finished after 3 iterations (i = 283, 638, 993) of the for loop.\n
+The CUDA thread finished after 3 iterations (i = 283, 638, 993) of the for loop.
++cuda sm 8 warp 3 lane 31
+[Switching focus to CUDA kernel 1, grid 2, block (4,0,0), thread (31,0,0), device 0, sm 8, warp 3, lane 31]
+51	    for (unsigned int i = tid; i < size; i += stride)
++print blockIdx
+$17 = {x = 4, y = 0, z = 0}
++print threadIdx
+$18 = {x = 31, y = 0, z = 0}
++next
+53	        C[i] = A[i] + B[i];
++print i
+$19 = 315
++display i
++next 2
+53	        C[i] = A[i] + B[i];
+2: i = 670
++next 2
+55	}
++undisplay 2
++echo The CUDA thread finished after 2 iterations (i = 315, 670) of the for loop.\n
+The CUDA thread finished after 2 iterations (i = 315, 670) of the for loop.
++continue
+[Thread 0x7ffd0a001000 (LWP 4444) exited]
+Vector size vec_size =  999
+------------- One thread per element --------------
+Print only first rows:
+ 0.0 +  0.0 =  0.0
+ 1.0 +  2.0 =  3.0
+ 2.0 +  4.0 =  6.0
+ 3.0 +  6.0 =  9.0
+ 4.0 +  8.0 = 12.0
+ 5.0 + 10.0 = 15.0
+ 6.0 + 12.0 = 18.0
+ 7.0 + 14.0 = 21.0
+ 8.0 + 16.0 = 24.0
+ 9.0 + 18.0 = 27.0
+---------------------------------------------------
+------------- Grid-stride loop --------------------
+Print only first rows:
+ 0.0 +  0.0 =  0.0
+ 1.0 +  2.0 =  3.0
+ 2.0 +  4.0 =  6.0
+ 3.0 +  6.0 =  9.0
+ 4.0 +  8.0 = 12.0
+ 5.0 + 10.0 = 15.0
+ 6.0 + 12.0 = 18.0
+ 7.0 + 14.0 = 21.0
+ 8.0 + 16.0 = 24.0
+ 9.0 + 18.0 = 27.0
+---------------------------------------------------
+[Thread 0x7ffd0a003000 (LWP 4446) exited]
+[Thread 0x7ffd0a002000 (LWP 4445) exited]
+[Thread 0x7ffd0a000000 (LWP 4443) exited]
+[Inferior 1 (process 4442) exited normally]
++quit
