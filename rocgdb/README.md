@@ -107,7 +107,8 @@ The first breakpoint is inside `vectorAdd`. The command file:
 
 2. Selects the second wavefront of work-group `(3,0,0)` with `thread 13` and
    then the work-item in that wavefront with `lane 2`. `info lanes` shows that
-   only lanes 0, 1, and 2 are active on this wavefront. The selected lane
+   only lanes 0, 1, and 2 are used on this wavefront (the other 61 lanes are
+   unused and hidden by default). The selected lane
    corresponds to work-item `[66,0,0]`, and the command file prints:
 
    ```text

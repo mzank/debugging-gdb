@@ -82,7 +82,7 @@ echo This GPU work-item is finished after exactly one index "i". Focus on the ne
 # Scheduler locking keeps the other "threads"=wavefronts frozen. This allows
 # choosing a late GPU work-item whose "if" condition is false, e.g., wavefront 5
 # assigned to work-group (14,0,0) by choosing "thread 10".
-thread 10 
+thread 10
 # Check the lanes.
 info lanes
 # Choose lane 63 on wavefront 5.

@@ -288,7 +288,7 @@ GPU execution can be described from two views:
   coordinates and dimensions through `blockIdx`, `blockDim`, `gridDim`, and
   `threadIdx`. OpenMP exposes the same concepts through teams and threads.
 - **Hardware view:** the GPU executes wavefronts, and each wavefront contains
-  lanes. ROCgdb single-steps at wavefront granularity; each active lane
+  lanes. ROCgdb single-steps at wavefront granularity; each used lane
   corresponds to one work-item.
 
 On AMD GPUs, wavefronts are scheduled for execution on the SIMD units of a
@@ -296,15 +296,23 @@ Compute Unit (CU). The hardware hierarchy is:
 
 - **Compute Unit (CU):** the hardware unit that schedules and executes
   wavefronts.
-- **SIMD unit:** an execution unit within a CU. For example, the AMD Instinct
-  MI300A has four SIMD units per CU, each 16 lanes wide.
-- **Stream Processor (SP):** a vector arithmetic execution unit. Each SIMD unit
-  has 16 SPs, giving 64 SPs per CU. These SPs also execute FP64 vector
-  instructions, but at a lower rate.
+- **SIMD unit:** the 16-lane vector execution unit within a CU. For example, the
+  AMD Instinct MI300A has four SIMD units per CU, each 16 lanes wide.
+- **Stream Processor (SP):** an individual lane datapath within a SIMD unit.
+  Each 16-lane SIMD unit has 16 SPs, giving 64 SPs per CU (and 14,592 in total).
+  These SPs also execute FP64 vector instructions, but at a lower rate.
 - **Wavefront:** a group of lanes executed together by a SIMD unit. On CDNA GPUs
-  such as the AMD Instinct MI300A, a wavefront has 64 lanes.
-- **Lane:** an individual execution position within a wavefront. A used lane
-  corresponds to one work-item; an unused lane has no work-item.
+  such as the AMD Instinct MI300A, a wavefront has 64 lanes and executes over
+  4 cycles on a single 16-lane SIMD unit. A wavefront is bound to one SIMD unit
+  and cannot be split across multiple SIMDs; the CU achieves full throughput by
+  interleaving execution of different wavefronts across its four SIMD units.
+- **Lane:** an individual execution position within a wavefront:
+  - **Used vs. unused:** a used lane corresponds to one work-item; an unused
+    lane (e.g. at the end of a partial wavefront) has no work-item and is hidden
+    in `info lanes` by default.
+  - **Active vs. inactive:** an active lane is currently executing instructions;
+    an inactive lane is temporarily masked out by branch divergence, but still
+    corresponds to its work-item.
 
 A few important details:
 
@@ -314,7 +322,7 @@ A few important details:
   same CU.
 - A CU can keep multiple wavefronts resident and issue instructions from several
   of them concurrently. Residency is limited by resources such as registers and
-  LDS; each of the four SIMD units can issue independently.
+  LDS; the CU issues instructions to its SIMD units, which execute concurrently.
 - SPs represent physical arithmetic execution resources. Their number is not the
   number of concurrently resident work-items.
 
@@ -354,7 +362,7 @@ Wavefront capacity           = 912 * 8  = 7,296
 Number of Stream Processors  = 912 * 16 = 14,592
 ```
 
-**FP32 vs. FP64:** The Stream Processor count is an FP32 vector-ALU count. On
+**FP32 vs. FP64:** The Stream Processor count is an FP32 lane-datapath count. On
 the AMD Instinct MI300A, FP64 vector operations execute on the same SIMD units
 at half the FP32 rate (61.3 TFLOPS versus 122.6 TFLOPS). FP64 matrix operations
 use the matrix cores instead and reach 122.6 TFLOPS. Thus 14,592 is not a count
