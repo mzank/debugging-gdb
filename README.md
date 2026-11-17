@@ -14,6 +14,7 @@ and starts the corresponding debugger.
 - [Prerequisites](#prerequisites)
 - [Example walkthroughs](#example-walkthroughs)
 - [Captured output](#captured-output)
+- [License](#license)
 
 ## Repository layout
 
@@ -128,12 +129,8 @@ warp, wavefront, and lane IDs, scheduling, and generated kernel names can vary
 with the compiler, driver, debugger version, and GPU, so treat the captured
 output as a guide rather than an exact expected result.
 
----
-
 ## License
 
 This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
 
 You can also view the license here: https://www.apache.org/licenses/LICENSE-2.0
-
----
