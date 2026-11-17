@@ -1,0 +1,96 @@
+# ===================================================
+# rocgdb -x commands_rocgdb_vectoraddomp.txt ./build/vectoraddomp
+# ===================================================
+
+# Print commands before executing them.
+set trace-commands on
+# Automatically accept pending breakpoints.
+set breakpoint pending on
+# Disables line wrapping at the terminal width.
+set width unlimited
+
+# ===================================================
+# 1. Stop at the generated kernel.
+# ===================================================
+
+# Set a breakpoint in the OpenMP loop body.
+break 41
+
+# Run the program and stop at the first breakpoint.
+run
+
+echo The program stops at the breakpoint in the generated kernel, which uses one work-item per loop iteration.\n
+
+# ===================================================
+# 2. Inspect the GPU execution configuration.
+# ===================================================
+
+show architecture
+info agents
+info queues
+info dispatches
+echo Total work-items: 32 (work-groups) * 32 (work-items per work-group) = 1024.\n
+echo Every loop iteration is handled by one work-item.\n
+
+info threads
+
+echo Note that thread IDs in ROCgdb represent wavefronts on the GPU.\n
+
+# ===================================================
+# 3. Inspect a work-item in the kernel.
+# ===================================================
+
+# ROCgdb single-stepping operates at wavefront granularity.
+# Choose a GPU work-item by selecting a "thread"=wavefront and a lane.
+thread 8
+# Check the lanes of the current wavefront.
+info lanes
+lane 16
+print blockIdx
+print threadIdx
+print i
+print A_ptr[i]
+print B_ptr[i]
+
+# ===================================================
+# 4. Execute one work-item.
+# ===================================================
+
+# Freeze the other "threads"=wavefronts.
+set scheduler-locking on
+echo This GPU work-item is finished after exactly one index "i". Focus on the next GPU work-item.\n
+
+# Continue until the selected work-item finishes.
+next
+
+# ===================================================
+# 5. Inspect the final wavefront.
+# ===================================================
+
+# Choose one of the last GPU work-items, which are outside the valid range.
+thread 37
+info lanes
+lane 29
+print blockIdx
+print threadIdx
+
+echo Note that the last GPU work-items are inactive and thus, "next" moves to lane 0 of the same wavefront.\n
+
+# Step to the next source line.
+next
+
+# ===================================================
+# 6. Clean up.
+# ===================================================
+
+# Restore the default scheduling.
+set scheduler-locking replay
+
+# Delete the breakpoint.
+delete 1
+
+# Continue to the end of the program.
+continue
+
+# Quit ROCgdb.
+quit

@@ -1,0 +1,226 @@
+GNU gdb (ROCm-10.1.0) 16.3
+Copyright (C) 2024 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-pc-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://github.com/ROCm-Developer-Tools/ROCgdb/issues>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./build/vectoraddomp...
++set breakpoint pending on
++set width unlimited
++break 41
+Breakpoint 1 at 0x1a000: file ../src/vectoraddomp.cpp, line 41.
++run
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+[New Thread 0x7ffd07001000 (LWP 4343)]
+[New Thread 0x7ffd07002000 (LWP 4344)]
+[New Thread 0x7ffd07003000 (LWP 4345)]
+[Thread 0x7ffd07003000 (LWP 4345) exited]
+[New Thread 0x7ffd07004000 (LWP 4346)]
+[Switching to thread 6, lane 0 (AMDGPU Lane 1:1:1:1/0 (2,0,0)[0,0,0])]
+
+Thread 6 "__omp_offlo-43ff" hit Breakpoint 1.2, with lanes [0-31], __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+41	        C_ptr[i] = A_ptr[i] + B_ptr[i];
++echo The program stops at the breakpoint in the generated kernel, which uses one work-item per loop iteration.\n
+The program stops at the breakpoint in the generated kernel, which uses one work-item per loop iteration.
++show architecture
+The target architecture is set to "auto" (currently "amdgcn:gfx942").
++info agents
+  Id State Target Id                  Architecture Device Name         Cores Threads Location 
+* 1  A     AMDGPU Agent (GPUID 12345) gfx942       AMD Instinct MI300A 912   7296    0000:00:00.0 
++info queues
+  Id   Target Id                Type         Read   Write  Size     Address            
+* 1    AMDGPU Queue 1:1 (QID 1) HSA          1      2      32768    0x00007ffd05000000 
+  2    AMDGPU Queue 1:2 (QID 0) HSA          3      3      4096     0x00007ffd05100000 
+  3    AMDGPU Queue 1:3 (QID 2) DMA                        8388608  0x00007ffd05200000 
++info dispatches
+  Id   Target Id                      Grid   Workgroup Fence   Kernel Function 
+* 1    AMDGPU Dispatch 1:1:1 (PKID 1) [1024] [32]      As|Rs   __omp_offloading_37_2b4d86_main_l38 
++echo Total work-items: 32 (work-groups) * 32 (work-items per work-group) = 1024.\n
+Total work-items: 32 (work-groups) * 32 (work-items per work-group) = 1024.
++echo Every loop iteration is handled by one work-item.\n
+Every loop iteration is handled by one work-item.
++info threads
+  Id   Target Id                                          Frame 
+  1    Thread 0x7ffd07000000 (LWP 4342) "vectoraddomp"   0x00007ffd06001000 in ioctl () from /lib64/libc.so.6
+  2    Thread 0x7ffd07001000 (LWP 4343) "vectoraddomp"   0x00007ffd06001000 in ioctl () from /lib64/libc.so.6
+  3    Thread 0x7ffd07002000 (LWP 4344) "vectoraddomp"   0x00007ffd06001000 in ioctl () from /lib64/libc.so.6
+  5    Thread 0x7ffd07004000 (LWP 4346) "vectoraddomp"   0x00007ffd06001000 in ioctl () from /lib64/libc.so.6
+* 6    AMDGPU Wave 1:1:1:1 (2,0,0)/0 "__omp_offlo-43ff"   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  7    AMDGPU Wave 1:1:1:2 (8,0,0)/0 "__omp_offlo-43ff"   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  8    AMDGPU Wave 1:1:1:3 (14,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  9    AMDGPU Wave 1:1:1:4 (20,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  10   AMDGPU Wave 1:1:1:5 (26,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  11   AMDGPU Wave 1:1:1:6 (3,0,0)/0 "__omp_offlo-43ff"   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  12   AMDGPU Wave 1:1:1:7 (9,0,0)/0 "__omp_offlo-43ff"   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  13   AMDGPU Wave 1:1:1:8 (15,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  14   AMDGPU Wave 1:1:1:9 (21,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  15   AMDGPU Wave 1:1:1:10 (27,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  16   AMDGPU Wave 1:1:1:11 (4,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  17   AMDGPU Wave 1:1:1:12 (10,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  18   AMDGPU Wave 1:1:1:13 (16,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  19   AMDGPU Wave 1:1:1:14 (22,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  20   AMDGPU Wave 1:1:1:15 (28,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  21   AMDGPU Wave 1:1:1:16 (5,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  22   AMDGPU Wave 1:1:1:17 (11,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  23   AMDGPU Wave 1:1:1:18 (17,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  24   AMDGPU Wave 1:1:1:19 (23,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  25   AMDGPU Wave 1:1:1:20 (29,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  26   AMDGPU Wave 1:1:1:21 (0,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  27   AMDGPU Wave 1:1:1:22 (6,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  28   AMDGPU Wave 1:1:1:23 (12,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  29   AMDGPU Wave 1:1:1:24 (18,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  30   AMDGPU Wave 1:1:1:25 (24,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  31   AMDGPU Wave 1:1:1:26 (30,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  32   AMDGPU Wave 1:1:1:27 (1,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  33   AMDGPU Wave 1:1:1:28 (7,0,0)/0 "__omp_offlo-43ff"  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  34   AMDGPU Wave 1:1:1:29 (13,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  35   AMDGPU Wave 1:1:1:30 (19,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  36   AMDGPU Wave 1:1:1:31 (25,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  37   AMDGPU Wave 1:1:1:32 (31,0,0)/0 "__omp_offlo-43ff" __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
++echo Note that thread IDs in ROCgdb represent wavefronts on the GPU.\n
+Note that thread IDs in ROCgdb represent wavefronts on the GPU.
++thread 8
+[Switching to thread 8, lane 0 (AMDGPU Lane 1:1:1:3/0 (14,0,0)[0,0,0])]
+#0  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+41	        C_ptr[i] = A_ptr[i] + B_ptr[i];
++info lanes
+  Id   State Target Id                               Frame 
+* 0    A     AMDGPU Lane 1:1:1:3/0 (14,0,0)[0,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  1    A     AMDGPU Lane 1:1:1:3/1 (14,0,0)[1,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  2    A     AMDGPU Lane 1:1:1:3/2 (14,0,0)[2,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  3    A     AMDGPU Lane 1:1:1:3/3 (14,0,0)[3,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  4    A     AMDGPU Lane 1:1:1:3/4 (14,0,0)[4,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  5    A     AMDGPU Lane 1:1:1:3/5 (14,0,0)[5,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  6    A     AMDGPU Lane 1:1:1:3/6 (14,0,0)[6,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  7    A     AMDGPU Lane 1:1:1:3/7 (14,0,0)[7,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  8    A     AMDGPU Lane 1:1:1:3/8 (14,0,0)[8,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  9    A     AMDGPU Lane 1:1:1:3/9 (14,0,0)[9,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  10   A     AMDGPU Lane 1:1:1:3/10 (14,0,0)[10,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  11   A     AMDGPU Lane 1:1:1:3/11 (14,0,0)[11,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  12   A     AMDGPU Lane 1:1:1:3/12 (14,0,0)[12,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  13   A     AMDGPU Lane 1:1:1:3/13 (14,0,0)[13,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  14   A     AMDGPU Lane 1:1:1:3/14 (14,0,0)[14,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  15   A     AMDGPU Lane 1:1:1:3/15 (14,0,0)[15,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  16   A     AMDGPU Lane 1:1:1:3/16 (14,0,0)[16,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  17   A     AMDGPU Lane 1:1:1:3/17 (14,0,0)[17,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  18   A     AMDGPU Lane 1:1:1:3/18 (14,0,0)[18,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  19   A     AMDGPU Lane 1:1:1:3/19 (14,0,0)[19,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  20   A     AMDGPU Lane 1:1:1:3/20 (14,0,0)[20,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  21   A     AMDGPU Lane 1:1:1:3/21 (14,0,0)[21,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  22   A     AMDGPU Lane 1:1:1:3/22 (14,0,0)[22,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  23   A     AMDGPU Lane 1:1:1:3/23 (14,0,0)[23,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  24   A     AMDGPU Lane 1:1:1:3/24 (14,0,0)[24,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  25   A     AMDGPU Lane 1:1:1:3/25 (14,0,0)[25,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  26   A     AMDGPU Lane 1:1:1:3/26 (14,0,0)[26,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  27   A     AMDGPU Lane 1:1:1:3/27 (14,0,0)[27,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  28   A     AMDGPU Lane 1:1:1:3/28 (14,0,0)[28,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  29   A     AMDGPU Lane 1:1:1:3/29 (14,0,0)[29,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  30   A     AMDGPU Lane 1:1:1:3/30 (14,0,0)[30,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  31   A     AMDGPU Lane 1:1:1:3/31 (14,0,0)[31,0,0] __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
++lane 16
+[Switching to thread 8, lane 16 (AMDGPU Lane 1:1:1:3/16 (14,0,0)[16,0,0])]
+#0  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+41	        C_ptr[i] = A_ptr[i] + B_ptr[i];
++print blockIdx
+$1 = {x = 14, y = 0, z = 0}
++print threadIdx
+$2 = {x = 16, y = 0, z = 0}
++print i
+$3 = 464
++print A_ptr[i]
+$4 = 464
++print B_ptr[i]
+$5 = 928
++set scheduler-locking on
++echo This GPU work-item is finished after exactly one index "i". Focus on the next GPU work-item.\n
+This GPU work-item is finished after exactly one index "i". Focus on the next GPU work-item.
++next
+
+Thread 8 "__omp_offlo-43ff" hit Breakpoint 1.2, with lanes [0-31], __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+41	        C_ptr[i] = A_ptr[i] + B_ptr[i];
++thread 37
+[Switching to thread 37, lane 0 (AMDGPU Lane 1:1:1:32/0 (31,0,0)[0,0,0])]
+#0  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+41	        C_ptr[i] = A_ptr[i] + B_ptr[i];
++info lanes
+  Id   State Target Id                                Frame 
+* 0    A     AMDGPU Lane 1:1:1:32/0 (31,0,0)[0,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  1    A     AMDGPU Lane 1:1:1:32/1 (31,0,0)[1,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  2    A     AMDGPU Lane 1:1:1:32/2 (31,0,0)[2,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  3    A     AMDGPU Lane 1:1:1:32/3 (31,0,0)[3,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  4    A     AMDGPU Lane 1:1:1:32/4 (31,0,0)[4,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  5    A     AMDGPU Lane 1:1:1:32/5 (31,0,0)[5,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  6    A     AMDGPU Lane 1:1:1:32/6 (31,0,0)[6,0,0]   __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+  7    I     AMDGPU Lane 1:1:1:32/7 (31,0,0)[7,0,0]   (inactive)
+  8    I     AMDGPU Lane 1:1:1:32/8 (31,0,0)[8,0,0]   (inactive)
+  9    I     AMDGPU Lane 1:1:1:32/9 (31,0,0)[9,0,0]   (inactive)
+  10   I     AMDGPU Lane 1:1:1:32/10 (31,0,0)[10,0,0] (inactive)
+  11   I     AMDGPU Lane 1:1:1:32/11 (31,0,0)[11,0,0] (inactive)
+  12   I     AMDGPU Lane 1:1:1:32/12 (31,0,0)[12,0,0] (inactive)
+  13   I     AMDGPU Lane 1:1:1:32/13 (31,0,0)[13,0,0] (inactive)
+  14   I     AMDGPU Lane 1:1:1:32/14 (31,0,0)[14,0,0] (inactive)
+  15   I     AMDGPU Lane 1:1:1:32/15 (31,0,0)[15,0,0] (inactive)
+  16   I     AMDGPU Lane 1:1:1:32/16 (31,0,0)[16,0,0] (inactive)
+  17   I     AMDGPU Lane 1:1:1:32/17 (31,0,0)[17,0,0] (inactive)
+  18   I     AMDGPU Lane 1:1:1:32/18 (31,0,0)[18,0,0] (inactive)
+  19   I     AMDGPU Lane 1:1:1:32/19 (31,0,0)[19,0,0] (inactive)
+  20   I     AMDGPU Lane 1:1:1:32/20 (31,0,0)[20,0,0] (inactive)
+  21   I     AMDGPU Lane 1:1:1:32/21 (31,0,0)[21,0,0] (inactive)
+  22   I     AMDGPU Lane 1:1:1:32/22 (31,0,0)[22,0,0] (inactive)
+  23   I     AMDGPU Lane 1:1:1:32/23 (31,0,0)[23,0,0] (inactive)
+  24   I     AMDGPU Lane 1:1:1:32/24 (31,0,0)[24,0,0] (inactive)
+  25   I     AMDGPU Lane 1:1:1:32/25 (31,0,0)[25,0,0] (inactive)
+  26   I     AMDGPU Lane 1:1:1:32/26 (31,0,0)[26,0,0] (inactive)
+  27   I     AMDGPU Lane 1:1:1:32/27 (31,0,0)[27,0,0] (inactive)
+  28   I     AMDGPU Lane 1:1:1:32/28 (31,0,0)[28,0,0] (inactive)
+  29   I     AMDGPU Lane 1:1:1:32/29 (31,0,0)[29,0,0] (inactive)
+  30   I     AMDGPU Lane 1:1:1:32/30 (31,0,0)[30,0,0] (inactive)
+  31   I     AMDGPU Lane 1:1:1:32/31 (31,0,0)[31,0,0] (inactive)
++lane 29
+[Switching to thread 37, lane 29 (AMDGPU Lane 1:1:1:32/29 (31,0,0)[29,0,0])]
+warning: Current lane is inactive.
+#0  __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+41	        C_ptr[i] = A_ptr[i] + B_ptr[i];
++print blockIdx
+$6 = {x = 31, y = 0, z = 0}
++print threadIdx
+$7 = {x = 29, y = 0, z = 0}
++echo Note that the last GPU work-items are inactive and thus, "next" moves to lane 0 of the same wavefront.\n
+Note that the last GPU work-items are inactive and thus, "next" moves to lane 0 of the same wavefront.
++next
+[Switching to thread 37, lane 0 (AMDGPU Lane 1:1:1:32/0 (31,0,0)[0,0,0])]
+
+Thread 37 "__omp_offlo-43ff" hit Breakpoint 1.2, with lanes [0-6], __omp_offloading_37_2b4d86_main_l38_debug__ (C_ptr=0x7ffd04000000, A_ptr=0x7ffd04001000, B_ptr=0x7ffd04002000, dyn_ptr=0xffffffffffffffff) at ../src/vectoraddomp.cpp:41
+41	        C_ptr[i] = A_ptr[i] + B_ptr[i];
++set scheduler-locking replay
++delete 1
++continue
+[Thread 0x7ffd07004000 (LWP 4346) exited]
+[Thread 0x7ffd07001000 (LWP 4343) exited]
+[Thread 0x7ffd07002000 (LWP 4344) exited]
+Vector size vec_size =  999
+OpenMP version: 202011
+------------- OpenMP GPU vector addition ----------
+ 0.0 +  0.0 =  0.0
+ 1.0 +  2.0 =  3.0
+ 2.0 +  4.0 =  6.0
+ 3.0 +  6.0 =  9.0
+ 4.0 +  8.0 = 12.0
+ 5.0 + 10.0 = 15.0
+ 6.0 + 12.0 = 18.0
+ 7.0 + 14.0 = 21.0
+ 8.0 + 16.0 = 24.0
+ 9.0 + 18.0 = 27.0
+---------------------------------------------------
+[Inferior 1 (process 4342) exited normally]
++quit
