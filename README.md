@@ -14,6 +14,17 @@ and starts the corresponding debugger.
 | [`cuda-gdb/`](cuda-gdb/) | CUDA-GDB walkthroughs for CUDA, OpenACC, and OpenMP, plus cheat sheet, command files, and build/run script |
 | [`rocgdb/`](rocgdb/) | ROCgdb walkthroughs for HIP and OpenMP, plus cheat sheet, command files, and build/run script |
 
+Each debugger directory also has an `output/` directory with captured session
+transcripts.
+
+## Debugger coverage
+
+| Directory | Debugger | Examples | Walkthrough | Cheat sheet |
+| --- | --- | --- | --- | --- |
+| [`gdb/`](gdb/) | GNU Debugger (GDB) | Segmentation fault | [`gdb/README.md`](gdb/README.md) | [`gdb_cheat_sheet.md`](gdb/gdb_cheat_sheet.md) |
+| [`cuda-gdb/`](cuda-gdb/) | NVIDIA CUDA-GDB | CUDA, OpenACC, OpenMP | [`cuda-gdb/README.md`](cuda-gdb/README.md) | [`cuda-gdb_cheat_sheet.md`](cuda-gdb/cuda-gdb_cheat_sheet.md) |
+| [`rocgdb/`](rocgdb/) | AMD ROCgdb | HIP, OpenMP | [`rocgdb/README.md`](rocgdb/README.md) | [`rocgdb_cheat_sheet.md`](rocgdb/rocgdb_cheat_sheet.md) |
+
 ---
 
 ## License
