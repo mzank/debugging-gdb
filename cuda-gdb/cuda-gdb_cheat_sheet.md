@@ -11,6 +11,16 @@ the complete command reference.
 Commands use `program` as the program name. Source file names and paths are
 illustrative; adapt them to your project.
 
+## Table of contents
+
+- [1. Command reference](#1-command-reference)
+- [2. Compile with CUDA debugging information](#2-compile-with-cuda-debugging-information)
+- [3. Start CUDA-GDB](#3-start-cuda-gdb)
+- [4. CUDA focus and execution inspection](#4-cuda-focus-and-execution-inspection)
+- [5. Software and hardware views](#5-software-and-hardware-views)
+- [6. CUDA debugging notes](#6-cuda-debugging-notes)
+- [7. Limitation: printing `std::vector<>` in CUDA-GDB](#7-limitation-printing-stdvector-in-cuda-gdb)
+
 ## 1. Command reference
 
 The commands below are CUDA-specific and are not covered in the GDB cheat
@@ -226,7 +236,7 @@ execution conditions. The hardware hierarchy is:
   executes warps.
 - **SM sub-partition:** an execution partition within an SM. On the NVIDIA RTX
   A5000 (`sm_86`), each SM has four sub-partitions, each with a warp scheduler
-  and 32 FP32 CUDA cores. These provide 128 FP32 CUDA cores per SM. Other
+  and 32 CUDA cores. These provide 128 FP32 CUDA cores per SM. Other
   instruction types use their corresponding execution resources.
 - **Warp:** a group of 32 lanes; this is NVIDIA's warp size, reported by
   CUDA-GDB as `Lanes/Warp`.

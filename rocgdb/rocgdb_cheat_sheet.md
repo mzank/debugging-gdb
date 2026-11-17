@@ -11,6 +11,15 @@ for the complete command reference.
 Commands use `program` as the program name. Source file names and paths are
 illustrative; adapt them to your project.
 
+## Table of contents
+
+- [1. Command reference](#1-command-reference)
+- [2. Compile with HIP/ROCm debugging information](#2-compile-with-hiprocm-debugging-information)
+- [3. Start ROCgdb](#3-start-rocgdb)
+- [4. GPU state and focus](#4-gpu-state-and-focus)
+- [5. Software and hardware views](#5-software-and-hardware-views)
+- [6. HIP/ROCm debugging notes](#6-hiprocm-debugging-notes)
+
 ## 1. Command reference
 
 The commands below are HIP/ROCm-specific or have a GPU-specific meaning in
@@ -289,7 +298,7 @@ Compute Unit (CU). The hardware hierarchy is:
   wavefronts.
 - **SIMD unit:** an execution unit within a CU. For example, the AMD Instinct
   MI300A has four SIMD units per CU, each 16 lanes wide.
-- **Stream Processor (SP):** an FP32 arithmetic execution unit. Each SIMD unit
+- **Stream Processor (SP):** a vector arithmetic execution unit. Each SIMD unit
   has 16 SPs, giving 64 SPs per CU. These SPs also execute FP64 vector
   instructions, but at a lower rate.
 - **Wavefront:** a group of lanes executed together by a SIMD unit. On CDNA GPUs

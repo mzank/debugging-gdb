@@ -5,6 +5,17 @@ covered in the sibling cheat sheets
 [`cuda-gdb/cuda-gdb_cheat_sheet.md`](../cuda-gdb/cuda-gdb_cheat_sheet.md) and
 [`rocgdb/rocgdb_cheat_sheet.md`](../rocgdb/rocgdb_cheat_sheet.md).
 
+## Table of contents
+
+- [1. Command reference](#1-command-reference)
+- [2. Compile with debugging information](#2-compile-with-debugging-information)
+- [3. Start GDB](#3-start-gdb)
+- [4. Breakpoints, watchpoints and catchpoints](#4-breakpoints-watchpoints-and-catchpoints)
+- [5. Running and stepping](#5-running-and-stepping)
+- [6. Understanding threads and stack frames](#6-understanding-threads-and-stack-frames)
+- [7. Text User Interface (TUI)](#7-text-user-interface-tui)
+- [8. Exit the debugger](#8-exit-the-debugger)
+
 ## 1. Command reference
 
 Many command names can be abbreviated to an unambiguous prefix. For example,
