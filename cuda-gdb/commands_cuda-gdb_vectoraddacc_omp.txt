@@ -1,0 +1,90 @@
+# ===================================================
+# cuda-gdb -x commands_cuda-gdb_vectoraddacc_omp.txt ./build/vectoraddacc
+# cuda-gdb -x commands_cuda-gdb_vectoraddacc_omp.txt ./build/vectoraddomp
+# ===================================================
+
+# Print commands before executing them.
+set trace-commands on
+
+# ===================================================
+# 1. Stop at the generated kernel.
+# ===================================================
+
+# Set a breakpoint in the OpenACC/OpenMP loop body.
+break 41
+
+# Run the program and stop at the first breakpoint.
+run
+
+# ===================================================
+# 2. Inspect the CUDA execution configuration.
+# ===================================================
+
+# List the CUDA devices and kernels.
+info cuda devices
+info cuda kernels
+echo Total CUDA threads: 8 * 128 = 1024.\nEach loop iteration is handled by one CUDA thread.\n
+
+# List the SMs, blocks, and threads.
+info cuda sms
+info cuda blocks
+info cuda threads
+
+# ===================================================
+# 3. Inspect a CUDA thread in the kernel.
+# ===================================================
+
+# CUDA-GDB single-stepping operates at warp granularity.
+# Select a CUDA thread (global).
+cuda block 3 thread 35
+
+# Print the block and thread indices, the element index, and the input values.
+print blockIdx
+print threadIdx
+print i
+print A_ptr[i]
+print B_ptr[i]
+
+# List the warps of the current SM and the lanes of the current warp.
+info cuda warps
+info cuda lanes
+
+# ===================================================
+# 4. Execute one CUDA thread.
+# ===================================================
+
+echo This CUDA thread (global) is finished after exactly one index "i". Focus on the next CUDA thread (global).\n
+
+# Continue until the selected CUDA thread finishes.
+next
+
+# ===================================================
+# 5. Inspect the final warp.
+# ===================================================
+
+# Select one of the last CUDA threads (global), which is outside the valid range.
+cuda block 7 thread 127
+
+# Print the block and thread indices and the element index.
+print blockIdx
+print threadIdx
+print i
+
+# List the warps of the current SM and the lanes of the current warp.
+info cuda warps
+info cuda lanes
+
+echo Note that the last CUDA threads are divergent.\n
+
+# Step to the next source line.
+next
+
+# ===================================================
+# 6. Clean up.
+# ===================================================
+
+# Continue to the end of the program.
+continue
+
+# Quit CUDA-GDB.
+quit

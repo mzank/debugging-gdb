@@ -1,0 +1,158 @@
+# ===================================================
+# cuda-gdb -x commands_cuda-gdb_vectoradd.txt ./build/vectoradd
+# ===================================================
+
+# Print commands before executing them.
+set trace-commands on
+
+# ===================================================
+# 1. Stop at the vectorAdd() kernel.
+# ===================================================
+
+# Set a breakpoint in vectorAdd().
+break 35
+# Set a breakpoint in vectorAddStride().
+break 51
+
+# Run the program and stop at the first breakpoint.
+run
+
+echo The program stops at the breakpoint in vectorAdd(), which uses one thread per element.\n
+
+# ===================================================
+# 2. Inspect the CUDA execution configuration.
+# ===================================================
+
+# List the CUDA devices, kernels, SMs, blocks, and threads.
+info cuda devices
+info cuda kernels
+info cuda sms
+info cuda blocks
+info cuda threads
+
+# ===================================================
+# 3. Inspect a CUDA thread in vectorAdd().
+# ===================================================
+
+# CUDA-GDB single-stepping operates at warp granularity.
+# Select a CUDA thread (global).
+cuda block 3 thread 35
+
+# Print the block and thread indices, the element index, and the input values.
+print blockIdx
+print threadIdx
+print i
+print A[i]
+print B[i]
+
+# List the warps of the current SM and the lanes of the current warp.
+info cuda warps
+info cuda lanes
+
+echo This CUDA thread (global) is finished after exactly one index "i". Focus on the next CUDA thread (global).\n
+
+# Continue until the selected CUDA thread finishes.
+next 3
+
+# ===================================================
+# 4. Inspect a CUDA thread outside the valid range.
+# ===================================================
+
+# Select one of the last CUDA threads (global), which is outside the valid range.
+cuda block 14 thread 66
+
+# Print the block and thread indices and the element index.
+print blockIdx
+print threadIdx
+print i
+
+# Alternatively, select a CUDA thread by warp and lane.
+# List the lanes before selecting by warp and lane.
+info cuda lanes
+# Select the CUDA thread in warp 2, lane 1.
+cuda warp 2 lane 1
+
+# Print the block and thread indices and the element index.
+print blockIdx
+print threadIdx
+print i
+
+echo The if condition is false.\n
+
+# Step to the next source line.
+next
+
+# ===================================================
+# 5. Follow a grid-stride CUDA thread.
+# ===================================================
+
+echo Continue to the grid-stride loop in vectorAddStride().\n
+
+# Continue to the grid-stride kernel.
+continue
+
+# List the CUDA threads of the current kernel.
+info cuda threads
+
+# Select a CUDA thread (global).
+cuda block 3 thread 70
+
+# Print the block and thread indices, the thread ID, and the stride.
+print blockIdx
+print threadIdx
+print tid
+print stride
+
+# Step into the loop body and print the loop index.
+next
+print i
+
+# Display the loop index at each stop.
+display i
+
+# Advance through the loop iterations.
+next 2
+next 2
+next 2
+
+# Stop displaying the loop index.
+undisplay 1
+
+echo The CUDA thread finished after 3 iterations (i = 283, 638, 993) of the for loop.\n
+
+# ===================================================
+# 6. Follow a thread selected by SM, warp, and lane.
+# ===================================================
+
+# Select a CUDA thread by SM, warp, and lane.
+cuda sm 8 warp 3 lane 31
+
+# Print the block and thread indices.
+print blockIdx
+print threadIdx
+
+# Step into the loop body and print the loop index.
+next
+print i
+
+# Display the loop index at each stop.
+display i
+
+# Advance through the loop iterations.
+next 2
+next 2
+
+# Stop displaying the loop index.
+undisplay 2
+
+echo The CUDA thread finished after 2 iterations (i = 315, 670) of the for loop.\n
+
+# ===================================================
+# 7. Clean up.
+# ===================================================
+
+# Continue to the end of the program.
+continue
+
+# Quit CUDA-GDB.
+quit
