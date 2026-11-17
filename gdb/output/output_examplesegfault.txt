@@ -1,0 +1,203 @@
+GNU gdb (Ubuntu 15.1-1ubuntu1~24.04.1) 15.1
+Copyright (C) 2024 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./build/examplesegfault...
++run
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+calculate (ptr=0x0) at ../src/examplesegfault.c:16
+16	    *ptr = 99;
++echo The program stops with a segmentation fault at line 16.\n
+The program stops with a segmentation fault at line 16.
++list 13,17
+13	void calculate(int *ptr)
+14	{
+15	    modify(&ptr);
+16	    *ptr = 99;
+17	}
++backtrace
+#0  calculate (ptr=0x0) at ../src/examplesegfault.c:16
+#1  0x00005555555551f3 in main () at ../src/examplesegfault.c:26
++break main
+Breakpoint 1 at 0x5555555551bd: file ../src/examplesegfault.c, line 20.
++break 16
+Breakpoint 2 at 0x5555555551a4: file ../src/examplesegfault.c, line 16.
++echo Rerun the program and stop at the source line causing the fault.\n
+Rerun the program and stop at the source line causing the fault.
++run
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, main () at ../src/examplesegfault.c:20
+20	{
++record full
++target record-full
++info threads
+  Id   Target Id                                            Frame 
+* 1    Thread 0x7ffff7f99740 (LWP 303995) "examplesegfault" main () at ../src/examplesegfault.c:20
++info locals
+number = 32767
+data = 0x7fffffffdd40
++echo Local variables have not been initialized yet.\n
+Local variables have not been initialized yet.
++continue
+
+Breakpoint 2, calculate (ptr=0x7fffffffdc4c) at ../src/examplesegfault.c:16
+16	    *ptr = 99;
++info args
+ptr = 0x7fffffffdc4c
++whatis ptr
+type = int *
++print ptr
+$1 = (int *) 0x7fffffffdc4c
++print *ptr
+$2 = 4
++next
+17	}
++print *ptr
+$3 = 99
++continue
+
+Breakpoint 2, calculate (ptr=0x0) at ../src/examplesegfault.c:16
+16	    *ptr = 99;
++print ptr
+$4 = (int *) 0x0
++echo ptr is a null pointer; writing to it causes a segmentation fault.\n
+ptr is a null pointer; writing to it causes a segmentation fault.
++next
+
+Program received signal SIGSEGV, Segmentation fault.
+calculate (ptr=0x0) at ../src/examplesegfault.c:16
+16	    *ptr = 99;
++echo The segmentation fault occurs here. Remove the line-16 breakpoint before stepping back.\n
+The segmentation fault occurs here. Remove the line-16 breakpoint before stepping back.
++delete 2
++echo Step backwards into the previously executed function call.\n
+Step backwards into the previously executed function call.
++reverse-step
++step 
+modify (ptr=0x7fffffffdc28) at ../src/examplesegfault.c:11
+11	}
++echo Go backwards to the statement that modified the pointer.\n
+Go backwards to the statement that modified the pointer.
++reverse-next
++next 
+10	        *ptr = nullptr;
++echo This statement sets *ptr to nullptr.\n
+This statement sets *ptr to nullptr.
++echo Display the currently selected stack frame.\n
+Display the currently selected stack frame.
++frame
+#0  modify (ptr=0x7fffffffdc28) at ../src/examplesegfault.c:10
+10	        *ptr = nullptr;
++echo Display the complete call stack.\n
+Display the complete call stack.
++backtrace
+#0  modify (ptr=0x7fffffffdc28) at ../src/examplesegfault.c:10
+#1  0x00005555555551a4 in calculate (ptr=0x7fffffffdc4c) at ../src/examplesegfault.c:15
+#2  0x00005555555551f3 in main () at ../src/examplesegfault.c:26
++echo Remove old breakpoints and set one in modify().\n
+Remove old breakpoints and set one in modify().
++delete 1
++list 4,11
+4	void modify(int **ptr)
+5	{
+6	    if (ptr == nullptr || *ptr == nullptr)
+7	        return;
+8	
+9	    if (**ptr % 2)
+10	        *ptr = nullptr;
+11	}
++break 9
+Breakpoint 3 at 0x555555555168: file ../src/examplesegfault.c, line 9.
++info breakpoints
+Num     Type           Disp Enb Address            What
+3       breakpoint     keep y   0x0000555555555168 in modify at ../src/examplesegfault.c:9
++echo Rerun with a breakpoint in modify().\n
+Rerun with a breakpoint in modify().
++run
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 3, modify (ptr=0x7fffffffdc28) at ../src/examplesegfault.c:9
+9	    if (**ptr % 2)
++info args
+ptr = 0x7fffffffdc28
++info locals
+No locals.
++print ptr
+$5 = (int **) 0x7fffffffdc28
++print *ptr
+$6 = (int *) 0x7fffffffdc4c
++print **ptr
+$7 = 4
++info registers
+rax            0x7fffffffdc4c      140737488346188
+rbx            0x7fffffffdd88      140737488346504
+rcx            0x555555557dc0      93824992247232
+rdx            0x7fffffffdd98      140737488346520
+rsi            0x7fffffffdd88      140737488346504
+rdi            0x7fffffffdc28      140737488346152
+rbp            0x7fffffffdc18      0x7fffffffdc18
+rsp            0x7fffffffdc18      0x7fffffffdc18
+r8             0x0                 0
+r9             0x7ffff7fca380      140737353917312
+r10            0x7fffffffd980      140737488345472
+r11            0x203               515
+r12            0x1                 1
+r13            0x0                 0
+r14            0x555555557dc0      93824992247232
+r15            0x7ffff7ffd000      140737354125312
+rip            0x555555555168      0x555555555168 <modify+31>
+eflags         0x202               [ IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+fs_base        0x7ffff7f99740      140737353717568
+gs_base        0x0                 0
++print **ptr % 2
+$8 = 0
++continue
+
+Breakpoint 3, modify (ptr=0x7fffffffdc28) at ../src/examplesegfault.c:9
+9	    if (**ptr % 2)
++print **ptr
+$9 = 99
++print **ptr % 2
+$10 = 1
++echo The first call encounters 4, which is even, so the pointer remains unchanged.\n
+The first call encounters 4, which is even, so the pointer remains unchanged.
++echo calculate() then changes the integer to 99.\n
+calculate() then changes the integer to 99.
++echo The second call encounters 99, which is odd, so modify() sets the local pointer to nullptr.\n
+The second call encounters 99, which is odd, so modify() sets the local pointer to nullptr.
++echo Change the integer value from 99 to the even number 6.\n
+Change the integer value from 99 to the even number 6.
++set var **ptr=6
++print **ptr
+$11 = 6
++print **ptr % 2
+$12 = 0
++continue
+[Inferior 1 (process 303996) exited normally]
++echo The program terminates normally because modify() does not set *ptr to nullptr.\n
+The program terminates normally because modify() does not set *ptr to nullptr.
++delete breakpoints
++quit
