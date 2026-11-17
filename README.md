@@ -38,6 +38,27 @@ using CUDA, HIP, OpenACC, and OpenMP.
 | [`vectoraddacc.cpp`](src/vectoraddacc.cpp) | C++20 / OpenACC | OpenACC offloading | [CUDA-GDB](cuda-gdb/README.md) |
 | [`vectoraddomp.cpp`](src/vectoraddomp.cpp) | C++20 / OpenMP | OpenMP offloading | [CUDA-GDB](cuda-gdb/README.md) and [ROCgdb](rocgdb/README.md) |
 
+## Quick start
+
+From the repository root, run:
+
+```bash
+(cd gdb && ./compile_run_gdb.sh)
+(cd cuda-gdb && ./compile_run_cuda-gdb.sh)
+(cd rocgdb && ./compile_run_rocgdb.sh)
+```
+
+The scripts must run from their own debugger directory because they use paths
+relative to that directory, including `../src`. Each script:
+
+- Deletes and recreates the debugger directory's `build/` directory.
+- Builds the relevant example programs into `build/`.
+- Runs the debugger with its command files and writes the session transcript to
+  `build/output_*.txt`.
+
+See each debugger directory's README for the exact build commands and debugging
+sessions.
+
 ---
 
 ## License
