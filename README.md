@@ -81,6 +81,19 @@ the correct `gfx` target name.
 `calculate()`. The GDB walkthrough uses breakpoints, `backtrace`, reverse
 debugging, and variable inspection to find the fault and test a fix.
 
+### CUDA kernels (CUDA-GDB)
+
+`src/vectoradd.cu` adds two vectors with two CUDA kernels: one thread per
+element and a grid-stride loop. The CUDA-GDB walkthrough inspects kernels,
+blocks, threads, warps, and lanes, and follows selected CUDA threads while
+stepping at warp granularity.
+
+### OpenACC offloading (CUDA-GDB)
+
+`src/vectoraddacc.cpp` uses `#pragma acc parallel loop` to offload vector
+addition to the GPU. The CUDA-GDB walkthrough inspects the generated CUDA
+kernel and its threads, warps, and lanes.
+
 ---
 
 ## License
