@@ -5,6 +5,16 @@ GPU programs with GDB, CUDA-GDB, and ROCgdb. Each debugger directory contains a
 walkthrough, a cheat sheet, command files, and a script that builds the examples
 and starts the corresponding debugger.
 
+## Table of contents
+
+- [Repository layout](#repository-layout)
+- [Debugger coverage](#debugger-coverage)
+- [Example programs](#example-programs)
+- [Quick start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Example walkthroughs](#example-walkthroughs)
+- [Captured output](#captured-output)
+
 ## Repository layout
 
 | Path | Contents |
@@ -88,11 +98,35 @@ element and a grid-stride loop. The CUDA-GDB walkthrough inspects kernels,
 blocks, threads, warps, and lanes, and follows selected CUDA threads while
 stepping at warp granularity.
 
+### HIP kernels (ROCgdb)
+
+`src/vectoradd.hip` is the HIP counterpart of the CUDA example. The ROCgdb
+walkthrough introduces wavefronts and lanes and shows how to select work-items
+within a wavefront while stepping at wavefront granularity.
+
 ### OpenACC offloading (CUDA-GDB)
 
 `src/vectoraddacc.cpp` uses `#pragma acc parallel loop` to offload vector
 addition to the GPU. The CUDA-GDB walkthrough inspects the generated CUDA
 kernel and its threads, warps, and lanes.
+
+### OpenMP offloading (CUDA-GDB and ROCgdb)
+
+`src/vectoraddomp.cpp` uses `#pragma omp target teams distribute parallel for`
+to offload the vector addition across 1024 CUDA threads or work-items, with one
+loop iteration per thread or work-item. The CUDA-GDB and ROCgdb walkthroughs
+inspect the generated kernel and the state of its active, inactive, or divergent
+lanes.
+
+## Captured output
+
+The files in [`gdb/output/`](gdb/output/),
+[`cuda-gdb/output/`](cuda-gdb/output/), and [`rocgdb/output/`](rocgdb/output/)
+are captured reference transcripts from the included sessions. They are not
+updated automatically by the scripts. Addresses, debugger-specific thread,
+warp, wavefront, and lane IDs, scheduling, and generated kernel names can vary
+with the compiler, driver, debugger version, and GPU, so treat the captured
+output as a guide rather than an exact expected result.
 
 ---
 
