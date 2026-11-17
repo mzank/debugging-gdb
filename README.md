@@ -59,6 +59,28 @@ relative to that directory, including `../src`. Each script:
 See each debugger directory's README for the exact build commands and debugging
 sessions.
 
+## Prerequisites
+
+- **GDB example:** a C compiler with C23 support, such as `gcc` (the script
+  uses `-std=c2x`), and GDB.
+- **CUDA-GDB examples:** the NVIDIA CUDA toolkit and an NVIDIA GPU. The CUDA
+  example uses `nvcc`; the OpenACC and OpenMP examples use `nvc++` with GPU
+  offloading enabled.
+- **ROCgdb examples:** ROCm, an AMD GPU, `amdclang++`, and ROCgdb.
+
+The ROCgdb script builds for `gfx942` with `--offload-arch=gfx942`, as used on
+an AMD Instinct MI300A. Adjust this flag for other AMD GPUs; see the
+[LLVM AMDGPU usage documentation](https://llvm.org/docs/AMDGPUUsage.html) for
+the correct `gfx` target name.
+
+## Example walkthroughs
+
+### Segmentation fault (GDB)
+
+`src/examplesegfault.c` dereferences a null pointer on its second call to
+`calculate()`. The GDB walkthrough uses breakpoints, `backtrace`, reverse
+debugging, and variable inspection to find the fault and test a fix.
+
 ---
 
 ## License
