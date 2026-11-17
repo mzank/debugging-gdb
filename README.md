@@ -25,6 +25,19 @@ transcripts.
 | [`cuda-gdb/`](cuda-gdb/) | NVIDIA CUDA-GDB | CUDA, OpenACC, OpenMP | [`cuda-gdb/README.md`](cuda-gdb/README.md) | [`cuda-gdb_cheat_sheet.md`](cuda-gdb/cuda-gdb_cheat_sheet.md) |
 | [`rocgdb/`](rocgdb/) | AMD ROCgdb | HIP, OpenMP | [`rocgdb/README.md`](rocgdb/README.md) | [`rocgdb_cheat_sheet.md`](rocgdb/rocgdb_cheat_sheet.md) |
 
+## Example programs
+
+The examples cover a segmentation fault in a C23 program and C++20 programs
+using CUDA, HIP, OpenACC, and OpenMP.
+
+| File | Language / model | Example | Debugger |
+| --- | --- | --- | --- |
+| [`examplesegfault.c`](src/examplesegfault.c) | C23 | Segmentation fault | [GDB](gdb/README.md) |
+| [`vectoradd.cu`](src/vectoradd.cu) | C++20 / CUDA | CUDA kernels | [CUDA-GDB](cuda-gdb/README.md) |
+| [`vectoradd.hip`](src/vectoradd.hip) | C++20 / HIP | HIP kernels | [ROCgdb](rocgdb/README.md) |
+| [`vectoraddacc.cpp`](src/vectoraddacc.cpp) | C++20 / OpenACC | OpenACC offloading | [CUDA-GDB](cuda-gdb/README.md) |
+| [`vectoraddomp.cpp`](src/vectoraddomp.cpp) | C++20 / OpenMP | OpenMP offloading | [CUDA-GDB](cuda-gdb/README.md) and [ROCgdb](rocgdb/README.md) |
+
 ---
 
 ## License
